@@ -1,0 +1,61 @@
+<html>
+    <head>
+        <title>Login RS Citra Bhakti</title>
+        <!-- Include CSS File Here -->
+        <link rel="stylesheet" href="css/style.css"/>
+    </head>
+    <body>
+        <div class="container">
+            <div class="main">
+                <h2>Login</h2>
+                <form>
+                    <label>Email :</label>
+                    <input type="text" name="email" id="email" placeholder="Email"/>
+                    <label>Password :</label>
+                    <input type="password" name="password" id="password" placeholder="Password"/>
+                    <input type="button" value="Login" onclick="login()"/>
+                </form>
+            </div>
+            <div id="s">
+            </div>
+        </div>
+        <script>
+            function login() {
+                var json = {
+                    "email": document.getElementById("email").value,
+                    "password": document.getElementById("password").value
+                };
+                var html = JSON.stringify(json, 0, 100);
+                var url = "http://202.94.83.190:8080/165314041_rsku/webresources/user/login";
+                var xhr = new XMLHttpRequest();
+                xhr.open("post", url, true);
+                xhr.setRequestHeader("Content-type", "application/json");
+                xhr.send(html);
+                xhr.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        document.getElementById("s").innerHTML = this.responseText;
+                        if (this.responseText != "") {
+                            var username = document.getElementById("email").value;
+                            var password = document.getElementById("password").value;
+                            setCookie("username", username, 1);
+                            setCookie("password", password, 1);
+                            window.open("index1.html", "_self");
+                            document.getElementById("s").innerHTML = this.responseText;
+                        } else {
+                            document.getElementById("s").innerHTML = "Username atau Password Salah";
+                        }
+                    }
+                }
+
+            }
+
+            function setCookie(cname, cvalue, exdays) {
+                var d = new Date();
+                d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+                var expires = "expires=" + d.toUTCString();
+                document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+            }
+        </script>
+    </body>
+</html>
+

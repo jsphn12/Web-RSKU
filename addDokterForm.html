@@ -1,0 +1,174 @@
+<!DOCTYPE HTML>
+
+<html>
+    <head>
+        <title>RS Citra Bhakti</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="assets/css/main.css" />
+        <style>
+            /* Always set the map height explicitly to define the size of the div
+             * element that contains the map. */
+
+            /* Optional: Makes the sample page fill the window. */
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            table, th , td  {
+                border: 1px solid grey;
+                border-collapse: collapse;
+                padding: 5px;
+            }
+            table tr:nth-child(odd) {
+                background-color: white;
+            }
+            table tr:nth-child(even) {
+                background-color: #E0D5B7;
+            }
+        </style>
+    </head>
+    <body onload="loadDocLocation()">
+
+        <!-- Header -->
+        <header id="header">
+            <nav class="left">
+                <a href="#menu"><span>Menu</span></a>
+            </nav>
+            <a href="index1.html" class="logo">Citra Bhakti Hospital</a>
+
+        </header>
+
+        <!-- Menu -->
+        <nav id="menu">
+            <ul class="links">
+                <li><a href="klinik_1.html">Klinik</a></li>
+                <li><a href="dokter_1.html">Dokter</a></li>
+                <li><a href="pasien_1.html">Pasien</a></li>
+                <li><a href="cariAntrian.html">Find Antre</a></li>
+                <li><a href="addAntrian.html">Add Antre</a></li>
+                <li><a href="AddPasienForm.html">Add Pasien</a></li>
+                <li><a href="addKlinikForm.html">Add Klinik</a></li>
+                <li><a href="addDokterForm.html">Add Dokter</a></li>
+                <li><a href="index1.html">Logout</a></li>
+            </ul>
+        </nav>
+
+        <section id="main" class="wrapper">
+            <div class="container">
+                <form method="post" onsubmit="return make_json(this)">
+                        <div class="form-group">
+                            <label>Nama</label>
+                            <input type="text" class="form-control" id="nama" placeholder="Masukkan Nama">
+                        </div>
+                        <div class="form-group">
+                            <label>Spesialis</label>
+                            <input type="text" class="form-control" id="spesialis" placeholder="Masukkan Spesialis">
+                        </div>
+                    <div id="output" ></div>
+                    <button type="submit" class="btn btn-outline-warning">Submit</button>
+                </form>
+            </div>
+            <script>
+                function make_json(form) {
+                    var json = {
+                        "nama": form.nama.value,
+                        "spesialis": form.spesialis.value
+                    };
+
+                    var html = JSON.stringify(json, 0, 100);
+                    var Url = "http://202.94.83.190:8080/Rsku165314033/webresources/dokter/addDokter";
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('post', Url, false);
+                    xhr.setRequestHeader("content-type", "application/json");
+                    xhr.send(html);
+                    document.getElementById("output").innerHTML = html;
+                    return false;
+                }
+            </script>
+
+        </section>
+        <br>
+        <!-- Footer -->
+        <footer id="footer">
+            <div class="inner">
+                <h2>About</h2>
+                <ul class="actions">
+                    <li><span class="icon fa-map-marker"></span> 
+                        <a href="https://www.google.com/maps/place/Rumah+Sakit+Panti+Rapih/@-7.7768445,110.3741584,17z/data=!3m1!4b1!4m5!3m4!1s0x2e7a58350c965c8f:0xd2478324aaefb7af!8m2!3d-7.7768445!4d110.3763471" >
+                            yogyakarta</a></li>
+                    <li><span class="icon fa-envelope"></span> <a href="gmail.com">Mail</a></li>
+                    <li><span class="icon fa-phone"></span> <a href="#">(000) 000-0000</a></li>
+                    <div class="maps" id="map"></div>
+                </ul>
+            </div>
+            <div class="copyright">
+                &copy; Untitled.
+        </footer>
+        <script>
+            var map;
+            function loadDocLocation() {
+                var url = "http://202.94.83.190:8080/Rsku165314033/webresources/location";
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var obj = JSON.parse(this.responseText);
+                        map = new google.maps.Map(document.getElementById('map'), {
+                            center: {lat: obj[0].lat, lng: obj[0].lng},
+                            zoom: 15
+                        });
+                        var marker = [];
+                        for (var i = 0; i < obj.length; i++) {
+                            marker[i] = new google.maps.Marker({position: {lat: obj[i].lat, lng: obj[i].lng}, map: map});
+                        }
+                    }
+                };
+                xhttp.open("GET", url, true);
+                xhttp.send();
+            }
+
+            function loadDocPasien() {
+                var xmlhttp = new XMLHttpRequest();
+                var url = "http://202.94.83.190:8080/Rsku165314033/webresources/dokter";
+
+                xmlhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        myFunction(this.responseText);
+                    }
+                }
+                xmlhttp.open("GET", url, true);
+                xmlhttp.send();
+
+                function myFunction(response) {
+                    var arr = JSON.parse(response);
+                    var i;
+                    var out = "<center><table>";
+                    out += "<tr><td> Nama </td><td> Spesialis </td></tr>";
+
+                    for (i = 0; i < arr.length; i++) {
+                        out += "<tr><td>" + arr[i].nama + "</td><td>" + arr[i].spesialis + "</td></tr>";
+                    }
+                    out += "</table></center>";
+                    document.getElementById("id04").innerHTML = out;
+                }
+            }
+
+        </script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnD2l64I6G6fUkPpc3D79Jcau30v8xEKE&callback=initMap"
+        async defer></script>
+
+
+
+        <!-- Scripts -->
+        <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/js/jquery.scrolly.min.js"></script>
+        <script src="assets/js/skel.min.js"></script>
+        <script src="assets/js/util.js"></script>
+        <script src="assets/js/main.js"></script>
+
+
+    </body>
+</html>
+
+
